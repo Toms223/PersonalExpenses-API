@@ -34,9 +34,6 @@ func (repo UsersRepo) GetUserByEmail(email string) (*App.User, error) {
 }
 
 func (repo UsersRepo) GetUsers(skip int, limit int) ([]App.User, error) {
-	if skip < 0 || limit <= 0 || skip > limit {
-		return nil, fmt.Errorf("skip must be less than limit and positive. Limit must be greater than 0")
-	}
 	users := make([]App.User, limit-skip)
 	rows, err := repo.DB.Query(repo.Ctx,
 		`SELECT ("Id", "Name","Email","Limit") FROM "Users" ORDER BY "Name" LIMIT $1 OFFSET $2;`,

@@ -10,12 +10,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type ExpensesReop struct {
+type ExpensesRepo struct {
 	Ctx context.Context
 	DB  *pgxpool.Pool
 }
 
-func (repo ExpensesReop) GetUserExpenseById(userId int, id int) (*App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpenseById(userId int, id int) (*App.Expense, error) {
 	var expense App.Expense
 	err := repo.DB.QueryRow(repo.Ctx,
 		`SELECT ("Id", "Name", "Amount", "Date", "UserId", "CategoryId","Continuous","Fixed","Period") 
@@ -35,7 +35,7 @@ func (repo ExpensesReop) GetUserExpenseById(userId int, id int) (*App.Expense, e
 	return &expense, nil
 }
 
-func (repo ExpensesReop) GetUserExpenses(userId int, skip int, limit int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpenses(userId int, skip int, limit int) ([]App.Expense, error) {
 	if skip < 0 || limit <= 0 || skip > limit {
 		return nil, fmt.Errorf("skip must be less than limit and positive. Limit must be greater than 0")
 	}
@@ -49,7 +49,7 @@ func (repo ExpensesReop) GetUserExpenses(userId int, skip int, limit int) ([]App
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesReop) GetUserExpensesByDate(userId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpensesByDate(userId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
 	if startDate.Unix() > endDate.Unix() {
 		return nil, fmt.Errorf("start date must come before end date")
 	}
@@ -63,7 +63,7 @@ func (repo ExpensesReop) GetUserExpensesByDate(userId int, startDate time.Time, 
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesReop) GetYearMonthExpenses(userId int, year int, month int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetYearMonthExpenses(userId int, year int, month int) ([]App.Expense, error) {
 	if month < 1 || month > 12 || year < 0 {
 		return nil, fmt.Errorf("month value must be between 1 and 12 and year must be positive")
 	}
@@ -79,7 +79,7 @@ func (repo ExpensesReop) GetYearMonthExpenses(userId int, year int, month int) (
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesReop) GetExpensesByCategoryId(userId int, categoryId int, limit int, skip int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetExpensesByCategoryId(userId int, categoryId int, limit int, skip int) ([]App.Expense, error) {
 	if skip < 0 || limit <= 0 || skip > limit {
 		return nil, fmt.Errorf("skip must be less than limit and positive. Limit must be greater than 0")
 	}
@@ -93,7 +93,7 @@ func (repo ExpensesReop) GetExpensesByCategoryId(userId int, categoryId int, lim
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesReop) GetExpensesByCategoryIdAndDate(userId int, categoryId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetExpensesByCategoryIdAndDate(userId int, categoryId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
 	if startDate.Unix() > endDate.Unix() {
 		return nil, fmt.Errorf("start date must come before end date")
 	}
@@ -107,7 +107,7 @@ func (repo ExpensesReop) GetExpensesByCategoryIdAndDate(userId int, categoryId i
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesReop) GetExpensesByCategoryIdAndYearMonth(userId int, categoryId int, year int, month int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetExpensesByCategoryIdAndYearMonth(userId int, categoryId int, year int, month int) ([]App.Expense, error) {
 	if month < 1 || month > 12 || year < 0 {
 		return nil, fmt.Errorf("month value must be between 1 and 12 and year must be positive")
 	}

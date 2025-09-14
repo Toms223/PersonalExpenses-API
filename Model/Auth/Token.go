@@ -22,24 +22,24 @@ type Access struct {
 	ClientId uuid.UUID
 }
 
-func NewRefresh(UserId int, ClientId uuid.UUID, ctx context.Context, db *pgxpool.Pool) *Refresh {
+func NewRefresh(UserId int, ClientId uuid.UUID, ctx context.Context, db *pgxpool.Pool) (*Refresh, error) {
 	expiry := time.Now().UTC().Add(24 * 30 * time.Hour)
 	value := uuid.New()
 	_, err := db.Exec(ctx, `INSERT INTO refresh_tokens (value, expiry, user_id, client_id) VALUES ($1, $2, $3, $4);`,
 		value, expiry.UnixMilli(), UserId, ClientId,
 	)
 	if err != nil {
-		fmt.Errorf("could not create new refresh token for %s client", ClientId)
+		return nil, fmt.Errorf("could not create new refresh token for %s client", ClientId)
 	}
 	return &Refresh{
 		Value:    value,
 		Expiry:   expiry,
 		UserId:   UserId,
 		ClientId: ClientId,
-	}
+	}, nil
 }
 
-func NewAccess(UserId int, ClientId uuid.UUID, SigningSecret string, ctx context.Context, db *pgxpool.Pool) *Access {
+func NewAccess(UserId int, ClientId uuid.UUID, SigningSecret string, ctx context.Context, db *pgxpool.Pool) (*Access, error) {
 	expiry := time.Now().UTC().Add(time.Hour)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": UserId,
@@ -47,16 +47,16 @@ func NewAccess(UserId int, ClientId uuid.UUID, SigningSecret string, ctx context
 	})
 	signedString, err := token.SignedString([]byte(SigningSecret))
 	if err != nil {
-		fmt.Errorf("could not sign new access token for %s client", ClientId)
+		return nil, fmt.Errorf("could not sign new access token for %s client", ClientId)
 	}
 	_, err = db.Exec(ctx, `INSERT INTO access_tokens (value, client_id) VALUES ($1, $2);`,
 		signedString, ClientId,
 	)
 	if err != nil {
-		fmt.Errorf("could not create new acess token for %s client", ClientId)
+		return nil, fmt.Errorf("could not create new acess token for %s client", ClientId)
 	}
 	return &Access{
 		Value:    token,
 		ClientId: ClientId,
-	}
+	}, nil
 }
