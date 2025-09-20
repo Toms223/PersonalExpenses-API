@@ -23,9 +23,11 @@ func (repo CategoriesRepo) GetUserCategoryById(id int, userId int) (*App.Categor
 	return &category, nil
 }
 
-func (repo CategoriesRepo) GetUserCategories(userId int) ([]App.Category, error) {
+func (repo CategoriesRepo) GetUserCategories(userId int, skip int, limit int) ([]App.Category, error) {
 	categories := make([]App.Category, 0)
-	rows, err := repo.DB.Query(repo.Ctx, `SELECT ("Id","UserId","Name","Color") FROM "Categories" WHERE "UserId" = $2`, userId)
+	rows, err := repo.DB.Query(repo.Ctx,
+		`SELECT ("Id","UserId","Name","Color") FROM "Categories" WHERE "UserId" = $1 OFFSET $2 LIMIT $3`,
+		userId, skip, limit)
 	if err != nil {
 		return nil, fmt.Errorf("error getting user categories: %s", err)
 	}

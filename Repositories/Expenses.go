@@ -63,7 +63,7 @@ func (repo ExpensesRepo) GetUserExpensesByDate(userId int, startDate time.Time, 
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesRepo) GetYearMonthExpenses(userId int, year int, month int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpensesByMonthAndYear(userId int, year int, month int) ([]App.Expense, error) {
 	if month < 1 || month > 12 || year < 0 {
 		return nil, fmt.Errorf("month value must be between 1 and 12 and year must be positive")
 	}
@@ -79,7 +79,7 @@ func (repo ExpensesRepo) GetYearMonthExpenses(userId int, year int, month int) (
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesRepo) GetExpensesByCategoryId(userId int, categoryId int, limit int, skip int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpensesByCategoryId(userId int, categoryId int, skip int, limit int) ([]App.Expense, error) {
 	if skip < 0 || limit <= 0 || skip > limit {
 		return nil, fmt.Errorf("skip must be less than limit and positive. Limit must be greater than 0")
 	}
@@ -93,7 +93,7 @@ func (repo ExpensesRepo) GetExpensesByCategoryId(userId int, categoryId int, lim
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesRepo) GetExpensesByCategoryIdAndDate(userId int, categoryId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpensesByCategoryIdAndDate(userId int, categoryId int, startDate time.Time, endDate time.Time) ([]App.Expense, error) {
 	if startDate.Unix() > endDate.Unix() {
 		return nil, fmt.Errorf("start date must come before end date")
 	}
@@ -107,7 +107,7 @@ func (repo ExpensesRepo) GetExpensesByCategoryIdAndDate(userId int, categoryId i
 	return rowsToExpensesSlice(rows)
 }
 
-func (repo ExpensesRepo) GetExpensesByCategoryIdAndYearMonth(userId int, categoryId int, year int, month int) ([]App.Expense, error) {
+func (repo ExpensesRepo) GetUserExpensesByCategoryIdAndMonthAndYear(userId int, categoryId int, year int, month int) ([]App.Expense, error) {
 	if month < 1 || month > 12 || year < 0 {
 		return nil, fmt.Errorf("month value must be between 1 and 12 and year must be positive")
 	}
